@@ -21,18 +21,14 @@ last_day = Date.new(year, month, -1)
 days = first_day..last_day
 
 def print_day(day)
-  print "#{day.day}".rjust(2).ljust(3)
+  print day.day.to_s.rjust(2).ljust(3)
 end
 
 puts "      #{month}月 #{year}"
 puts "日 月 火 水 木 金 土 "
-days.each.with_index(1) do |day, i|
-  if i == 1
-    print "\s" * (day.wday * 2) + "\s" * day.wday
-    print_day(day)
-  else
-    print_day(day)
-  end
+print "\s" * (days.first.wday * 3)
+days.each do |day|
+  print_day(day)
   puts if day.saturday?
 end
 puts
