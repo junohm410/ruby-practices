@@ -3,13 +3,10 @@
 
 def number_of_displayed_rows(files)
   number_of_files = files.size
-  quatient_and_remainder = number_of_files.divmod(3)
+  quotient, remainder = number_of_files.divmod(3)
 
-  if quatient_and_remainder[1].zero?
-    quatient_and_remainder[0]
-  else
-    quatient_and_remainder[0] + 1
-  end
+  quotient += 1 unless remainder.zero?
+  quotient
 end
 
 def format_files(files, number_of_rows)
