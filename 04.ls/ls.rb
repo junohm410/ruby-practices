@@ -33,10 +33,14 @@ def print_files(array_of_files, number_of_characters)
   end
 end
 
-files_of_current_directory = Dir.glob('*')
-number_of_characters_in_the_longest_filename = files_of_current_directory.map(&:size).max
+def display_files
+  files_of_current_directory = Dir.glob('*')
+  number_of_characters_in_the_longest_filename = files_of_current_directory.map(&:size).max
 
-number_of_displayed_rows = get_number_of_displayed_rows(files_of_current_directory)
-array_of_files_for_printing = get_array_of_files_used_for_printing(files_of_current_directory, number_of_displayed_rows)
+  number_of_displayed_rows = get_number_of_displayed_rows(files_of_current_directory)
+  array_of_files_for_printing = get_array_of_files_used_for_printing(files_of_current_directory, number_of_displayed_rows)
 
-print_files(array_of_files_for_printing, number_of_characters_in_the_longest_filename)
+  print_files(array_of_files_for_printing, number_of_characters_in_the_longest_filename)
+end
+
+display_files
