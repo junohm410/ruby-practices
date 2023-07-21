@@ -1,12 +1,11 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+NUMBER_OF_COLUMNS = 3
+
 def number_of_displayed_rows(files)
   number_of_files = files.size
-  quotient, remainder = number_of_files.divmod(3)
-
-  quotient += 1 unless remainder.zero?
-  quotient
+  number_of_files.ceildiv(NUMBER_OF_COLUMNS)
 end
 
 def format_files(files, number_of_rows)
@@ -32,10 +31,9 @@ def display_files
   files = Dir.glob('*')
   width_per_file = files.map(&:size).max
 
-  lines_per_print = number_of_displayed_rows(files)
-  files_for_print = format_files(files, lines_per_print)
+  files = format_files(files, number_of_displayed_rows(files))
 
-  print_files(files_for_print, width_per_file)
+  print_files(files, width_per_file)
 end
 
 display_files
