@@ -13,11 +13,15 @@ def get_number_of_displayed_rows(files)
 end
 
 def get_array_of_files_used_for_printing(files, number_of_rows)
-  array_of_files = Array.new(number_of_rows) { [] }
-  files.each_with_index do |file, i|
-    array_of_files[i % number_of_rows] << file
+  array_of_files = []
+  files.each_slice(number_of_rows) do |col_of_files|
+    array_of_files << col_of_files
   end
-  array_of_files
+
+  last_col = array_of_files.last
+  last_col << '' until last_col.size == number_of_rows
+
+  array_of_files.transpose
 end
 
 def print_files(array_of_files, number_of_characters)
