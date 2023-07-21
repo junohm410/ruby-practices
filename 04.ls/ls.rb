@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-def get_number_of_displayed_rows(files)
+def number_of_displayed_rows(files)
   number_of_files = files.size
   quatient_and_remainder = number_of_files.divmod(3)
 
@@ -12,33 +12,33 @@ def get_number_of_displayed_rows(files)
   end
 end
 
-def get_array_of_files_used_for_printing(files, number_of_rows)
-  array_of_files = []
+def format_files(files, number_of_rows)
+  cols_of_files = []
   files.each_slice(number_of_rows) do |col_of_files|
-    array_of_files << col_of_files
+    cols_of_files << col_of_files
   end
 
-  last_col = array_of_files.last
+  last_col = cols_of_files.last
   last_col << '' until last_col.size == number_of_rows
 
-  array_of_files.transpose
+  cols_of_files.transpose
 end
 
-def print_files(array_of_files, number_of_characters)
-  array_of_files.each do |array|
-    array.each { |file| print "#{file.ljust(number_of_characters)} " }
+def print_files(formatted_file, width)
+  formatted_file.each do |files|
+    files.each { |file| print "#{file.ljust(width)} " }
     print "\n"
   end
 end
 
 def display_files
-  files_of_current_directory = Dir.glob('*')
-  number_of_characters_in_the_longest_filename = files_of_current_directory.map(&:size).max
+  files = Dir.glob('*')
+  width_per_file = files.map(&:size).max
 
-  number_of_displayed_rows = get_number_of_displayed_rows(files_of_current_directory)
-  array_of_files_for_printing = get_array_of_files_used_for_printing(files_of_current_directory, number_of_displayed_rows)
+  lines_per_print = number_of_displayed_rows(files)
+  files_for_print = format_files(files, lines_per_print)
 
-  print_files(array_of_files_for_printing, number_of_characters_in_the_longest_filename)
+  print_files(files_for_print, width_per_file)
 end
 
 display_files
