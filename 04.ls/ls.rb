@@ -26,13 +26,7 @@ end
 
 def print_files(array_of_files, number_of_characters)
   array_of_files.each do |array|
-    array.each.with_index(1) do |file, i|
-      if i == array.size
-        print file
-      else
-        print "#{file.ljust(number_of_characters)} "
-      end
-    end
+    array.each { |file| print "#{file.ljust(number_of_characters)} " }
     print "\n"
   end
 end
