@@ -30,7 +30,8 @@ def print_files(formatted_file, width)
 end
 
 def display_files
-  files = ARGV.getopts('a')['a'] ? Dir.entries('.').sort : Dir.glob('*')
+  flag = ARGV.getopts('a')['a'] ? File::FNM_DOTMATCH : 0
+  files = Dir.glob('*', flag)
   width_per_file = files.map(&:size).max
 
   files = format_files(files, number_of_displayed_rows(files))
