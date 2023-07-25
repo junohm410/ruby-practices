@@ -1,6 +1,8 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
+require 'optparse'
+
 NUMBER_OF_COLUMNS = 3
 
 def number_of_displayed_rows(files)
@@ -28,7 +30,8 @@ def print_files(formatted_file, width)
 end
 
 def display_files
-  files = Dir.glob('*')
+  flag = ARGV.getopts('a')['a'] ? File::FNM_DOTMATCH : 0
+  files = Dir.glob('*', flag)
   width_per_file = files.map(&:size).max
 
   files = format_files(files, number_of_displayed_rows(files))
