@@ -30,7 +30,8 @@ def print_files(formatted_file, width)
 end
 
 def display_files
-  files = ARGV.getopts('r')['r'] ? Dir.glob('*').reverse : Dir.glob('*')
+  files = Dir.glob('*')
+  files = files.reverse if ARGV.getopts('r')['r']
   width_per_file = files.map(&:size).max
 
   files = format_files(files, number_of_displayed_rows(files))
