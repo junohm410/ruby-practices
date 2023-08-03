@@ -101,20 +101,11 @@ def hard_links(stats)
 end
 
 def file_sizes(stats)
-  sizes = []
-  stats.each do |stat|
-    if stat.chardev? || stat.blockdev?
-      sizes << device_file_num(stat)
-    else
-      size = stat.size.to_s
-      sizes << size
-    end
-  end
-  sizes
+  stats.map { |stat| stat.chardev? || stat.blockdev? ? device_file_num(stat) : stat.size.to_s }
 end
 
 def total_blocks(stats)
-  stats.each.sum(&:blocks)
+  stats.sum(&:blocks)
 end
 
 def printing_width(object)
