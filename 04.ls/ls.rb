@@ -161,8 +161,13 @@ def print_files(formatted_file, width)
 end
 
 def display_files
-  files = Dir.glob('*')
-  return print_files_l(files) if ARGV.getopts('l')['l']
+  options = ARGV.getopts('arl')
+
+  flag = options['a'] ? File::FNM_DOTMATCH : 0
+  files = Dir.glob('*', flag)
+  files = files.reverse if options['r']
+
+  return print_files_l(files) if options['l']
 
   width_per_file = printing_width(files)
 
