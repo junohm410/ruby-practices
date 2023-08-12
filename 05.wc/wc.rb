@@ -77,8 +77,7 @@ end
 
 def lines_num(lines)
   lines_num = lines.size
-  lines_num -= 1 unless lines.last.end_with?("\n")
-  lines_num = 0 if lines.none?
+  lines_num -= 1 unless lines.none? || lines.last.end_with?("\n")
   lines_num
 end
 
