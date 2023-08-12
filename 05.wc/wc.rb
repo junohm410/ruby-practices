@@ -19,9 +19,7 @@ def print_from_stdin(options)
   file_size = input_data.bytesize
   total_nums = [lines_num, words_num, file_size]
 
-  width = calc_width(total_nums)
-
-  print_total(total_nums, width, options)
+  print_total(total_nums, options)
   print "\n"
 end
 
@@ -36,17 +34,16 @@ def print_from_args(files, options)
   total_size = file_sizes.sum
 
   total_nums = [total_lines_nums, total_words_nums, total_size]
-  width = calc_width(total_nums)
 
   files_info = [lines_nums, words_nums, file_sizes, files]
   formatted_info = files_info.transpose
 
   if files.size > 1
-    print_info(formatted_info, width, options)
-    print_total(total_nums, width, options)
+    print_info(formatted_info, total_nums, options)
+    print_total(total_nums, options)
     print " total\n"
   else
-    print_info(formatted_info, width, options)
+    print_info(formatted_info, total_nums, options)
   end
 end
 
@@ -83,7 +80,8 @@ def calc_width(nums)
   width + 1 > DEFAULT_WIDTH ? width + 1 : DEFAULT_WIDTH
 end
 
-def print_info(files, width, options)
+def print_info(files, total_nums, options)
+  width = calc_width(total_nums)
   output = ''
   is_option_none = options.values.none?
   files.each do |file|
@@ -95,7 +93,8 @@ def print_info(files, width, options)
   print output
 end
 
-def print_total(total_nums, width, options)
+def print_total(total_nums, options)
+  width = calc_width(total_nums)
   output = ''
   is_option_none = options.values.none?
   output += total_nums[0].to_s.rjust(width) if options['l'] || is_option_none
