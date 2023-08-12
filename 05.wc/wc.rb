@@ -14,10 +14,10 @@ def print_from_stdin
   input_data = $stdin.read
   lines = input_data.split("\n")
 
-  num_of_lines = lines.size.to_s
-  num_of_words = lines.map { |line| line.split.size }.sum.to_s
+  lines_num = lines.size.to_s
+  words_num = lines.map { |line| line.split.size }.sum.to_s
   file_size = input_data.bytesize.to_s
-  total_nums = [num_of_lines, num_of_words, file_size]
+  total_nums = [lines_num, words_num, file_size]
 
   width = calc_width(total_nums)
 
@@ -26,19 +26,19 @@ def print_from_stdin
 end
 
 def print_from_args(files)
-  nums_of_lines = calc_nums_of_lines(files)
-  total_nums_of_lines = nums_of_lines.sum.to_s
+  lines_nums = calc_lines_nums(files)
+  total_lines_nums = lines_nums.sum.to_s
 
-  nums_of_words = calc_nums_of_words(files)
-  total_nums_of_words = nums_of_words.sum.to_s
+  words_nums = calc_words_nums(files)
+  total_words_nums = words_nums.sum.to_s
 
   file_sizes = calc_sizes(files)
   total_size = file_sizes.sum.to_s
 
-  total_nums = [total_nums_of_lines, total_nums_of_words, total_size]
+  total_nums = [total_lines_nums, total_words_nums, total_size]
   width = calc_width(total_nums)
 
-  files_info = [nums_of_lines.map(&:to_s), nums_of_words.map(&:to_s), file_sizes.map(&:to_s), files]
+  files_info = [lines_nums.map(&:to_s), words_nums.map(&:to_s), file_sizes.map(&:to_s), files]
   formatted_info = files_info.transpose
 
   if files.size > 1
@@ -50,14 +50,14 @@ def print_from_args(files)
   end
 end
 
-def calc_nums_of_lines(files)
+def calc_lines_nums(files)
   files.map do |file|
     lines = File.open(file, &:readlines)
-    num_of_lines(lines)
+    lines_num(lines)
   end
 end
 
-def calc_nums_of_words(files)
+def calc_words_nums(files)
   files.map do |file|
     lines = File.open(file, &:readlines)
     lines.sum { |line| line.split.size }
@@ -71,11 +71,11 @@ def calc_sizes(files)
   end
 end
 
-def num_of_lines(lines)
-  num_of_lines = lines.size
-  num_of_lines -= 1 unless lines.last.end_with?("\n")
-  num_of_lines = 0 if lines.none?
-  num_of_lines
+def lines_num(lines)
+  lines_num = lines.size
+  lines_num -= 1 unless lines.last.end_with?("\n")
+  lines_num = 0 if lines.none?
+  lines_num
 end
 
 def calc_width(nums)
