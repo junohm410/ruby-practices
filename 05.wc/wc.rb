@@ -11,19 +11,27 @@ def main
 end
 
 def print_from_stdin(options)
-  input_data = $stdin.read
-  lines = input_data.split("\n")
+  File.open('ls_result', 'w') { |file| file.puts $stdin.read }
+  files_info = files_info(['ls_result'])
+  File.delete('ls_result')
 
-  lines_num = lines.size
-  words_num = lines.map { |line| line.split.size }.sum
-  file_size = input_data.bytesize
-  total_nums = [lines_num, words_num, file_size]
-
-  print_total(total_nums, options)
+  print_total(files_info[:total_nums], options)
   print "\n"
 end
 
 def print_from_args(files, options)
+  files_info = files_info(files)
+
+  if files.size > 1
+    print_info(files_info[:lines_words_sizes_info], files_info[:total_nums], options)
+    print_total(files_info[:total_nums], options)
+    print " total\n"
+  else
+    print_info(files_info[:lines_words_sizes_info], files_info[:total_nums], options)
+  end
+end
+
+def files_info(files)
   lines_nums = calc_lines_nums(files)
   total_lines_nums = lines_nums.sum
 
@@ -33,18 +41,10 @@ def print_from_args(files, options)
   file_sizes = calc_sizes(files)
   total_size = file_sizes.sum
 
-  total_nums = [total_lines_nums, total_words_nums, total_size]
-
-  files_info = [lines_nums, words_nums, file_sizes, files]
-  formatted_info = files_info.transpose
-
-  if files.size > 1
-    print_info(formatted_info, total_nums, options)
-    print_total(total_nums, options)
-    print " total\n"
-  else
-    print_info(formatted_info, total_nums, options)
-  end
+  {
+    lines_words_sizes_info: [lines_nums, words_nums, file_sizes, files].transpose,
+    total_nums: [total_lines_nums, total_words_nums, total_size]
+  }
 end
 
 def calc_lines_nums(files)
