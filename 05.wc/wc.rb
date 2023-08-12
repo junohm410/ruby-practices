@@ -25,23 +25,23 @@ def print_from_stdin
   print "\n"
 end
 
-def print_from_args(args)
-  nums_of_lines = calc_nums_of_lines(args)
+def print_from_args(files)
+  nums_of_lines = calc_nums_of_lines(files)
   total_nums_of_lines = nums_of_lines.sum.to_s
 
-  nums_of_words = calc_nums_of_words(args)
+  nums_of_words = calc_nums_of_words(files)
   total_nums_of_words = nums_of_words.sum.to_s
 
-  file_sizes = calc_sizes(args)
+  file_sizes = calc_sizes(files)
   total_size = file_sizes.sum.to_s
 
   total_nums = [total_nums_of_lines, total_nums_of_words, total_size]
   width = calc_width(total_nums)
 
-  files_info = [nums_of_lines.map(&:to_s), nums_of_words.map(&:to_s), file_sizes.map(&:to_s), args]
+  files_info = [nums_of_lines.map(&:to_s), nums_of_words.map(&:to_s), file_sizes.map(&:to_s), files]
   formatted_info = files_info.transpose
 
-  if args.size > 1
+  if files.size > 1
     print_info(formatted_info, width)
     print_total(total_nums, width)
     print " total\n"
