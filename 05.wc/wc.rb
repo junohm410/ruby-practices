@@ -4,13 +4,13 @@
 require 'optparse'
 
 DEFAULT_WIDTH = 8
-OPTIONS = ARGV.getopts('lwc')
 
 def main
-  ARGV.none? ? print_from_stdin : print_from_args(ARGV)
+  options = ARGV.getopts('lwc')
+  ARGV.none? ? print_from_stdin(options) : print_from_args(ARGV, options)
 end
 
-def print_from_stdin
+def print_from_stdin(options)
   input_data = $stdin.read
   lines = input_data.split("\n")
 
@@ -21,11 +21,11 @@ def print_from_stdin
 
   width = calc_width(total_nums)
 
-  print_total(total_nums, width)
+  print_total(total_nums, width, options)
   print "\n"
 end
 
-def print_from_args(files)
+def print_from_args(files, options)
   lines_nums = calc_lines_nums(files)
   total_lines_nums = lines_nums.sum.to_s
 
@@ -42,11 +42,11 @@ def print_from_args(files)
   formatted_info = files_info.transpose
 
   if files.size > 1
-    print_info(formatted_info, width)
-    print_total(total_nums, width)
+    print_info(formatted_info, width, options)
+    print_total(total_nums, width, options)
     print " total\n"
   else
-    print_info(formatted_info, width)
+    print_info(formatted_info, width, options)
   end
 end
 
@@ -83,24 +83,24 @@ def calc_width(nums)
   width + 1 > DEFAULT_WIDTH ? width + 1 : DEFAULT_WIDTH
 end
 
-def print_info(files, width)
+def print_info(files, width, options)
   output = ''
-  is_option_none = OPTIONS.values.none?
+  is_option_none = options.values.none?
   files.each do |file|
-    output += file[0].rjust(width) if OPTIONS['l'] || is_option_none
-    output += file[1].rjust(width) if OPTIONS['w'] || is_option_none
-    output += file[2].rjust(width) if OPTIONS['c'] || is_option_none
+    output += file[0].rjust(width) if options['l'] || is_option_none
+    output += file[1].rjust(width) if options['w'] || is_option_none
+    output += file[2].rjust(width) if options['c'] || is_option_none
     output += " #{file[3]}\n"
   end
   print output
 end
 
-def print_total(total_nums, width)
+def print_total(total_nums, width, options)
   output = ''
-  is_option_none = OPTIONS.values.none?
-  output += total_nums[0].rjust(width) if OPTIONS['l'] || is_option_none
-  output += total_nums[1].rjust(width) if OPTIONS['w'] || is_option_none
-  output += total_nums[2].rjust(width) if OPTIONS['c'] || is_option_none
+  is_option_none = options.values.none?
+  output += total_nums[0].rjust(width) if options['l'] || is_option_none
+  output += total_nums[1].rjust(width) if options['w'] || is_option_none
+  output += total_nums[2].rjust(width) if options['c'] || is_option_none
   print output
 end
 
