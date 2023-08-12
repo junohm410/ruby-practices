@@ -11,61 +11,68 @@ def main
 end
 
 def print_from_stdin(options)
-  File.open('ls_result', 'w') { |file| file.puts $stdin.read }
-  files_info = files_info(['ls_result'])
-  File.delete('ls_result')
+  input_data_lines = $stdin.readlines
 
-  print_total(files_info[:total_nums], options)
+  lines_num = lines_num(input_data_lines)
+  words_num = input_data_lines.sum { |line| line.split.size }
+  file_size = input_data_lines.join.bytesize
+  total_nums = { 'total_lines' => lines_num, 'total_words' => words_num, 'total_size' => file_size }
+
+  print_total(total_nums, options)
   print "\n"
 end
 
 def print_from_args(files, options)
-  files_info = files_info(files)
+  files_info = format_files_info(files)
 
   if files.size > 1
-    print_info(files_info[:lines_words_sizes_info], files_info[:total_nums], options)
+    print_info(files_info[:lines_words_sizes], files_info[:total_nums], options)
     print_total(files_info[:total_nums], options)
     print " total\n"
   else
-    print_info(files_info[:lines_words_sizes_info], files_info[:total_nums], options)
+    print_info(files_info[:lines_words_sizes], files_info[:total_nums], options)
   end
 end
 
-def files_info(files)
-  lines_nums = calc_lines_nums(files)
+def format_files_info(files)
+  all_files_lines = files.map { |file| File.open(file, &:readlines) }
+
+  lines_nums = calc_lines_nums(all_files_lines)
   total_lines_nums = lines_nums.sum
 
-  words_nums = calc_words_nums(files)
+  words_nums = calc_words_nums(all_files_lines)
   total_words_nums = words_nums.sum
 
-  file_sizes = calc_sizes(files)
+  file_sizes = calc_sizes(all_files_lines)
   total_size = file_sizes.sum
 
+  lines_words_sizes = [lines_nums, words_nums, file_sizes, files].transpose
+  keys = %w[lines_num words_num file_size file_name]
+  formatted_3_elemetnts_info =
+    lines_words_sizes.map { |info| [keys, info].transpose.to_h }
+
+  total_nums = [total_lines_nums, total_words_nums, total_size]
+  keys = %w[total_lines total_words total_size]
+  formatted_total_nums = [keys, total_nums].transpose.to_h
+
   {
-    lines_words_sizes_info: [lines_nums, words_nums, file_sizes, files].transpose,
-    total_nums: [total_lines_nums, total_words_nums, total_size]
+    lines_words_sizes: formatted_3_elemetnts_info,
+    total_nums: formatted_total_nums
   }
 end
 
-def calc_lines_nums(files)
-  files.map do |file|
-    lines = File.open(file, &:readlines)
-    lines_num(lines)
+def calc_lines_nums(files_lines)
+  files_lines.map { |file_lines| lines_num(file_lines) }
+end
+
+def calc_words_nums(files_lines)
+  files_lines.map do |file_lines|
+    file_lines.sum { |line| line.split.size }
   end
 end
 
-def calc_words_nums(files)
-  files.map do |file|
-    lines = File.open(file, &:readlines)
-    lines.sum { |line| line.split.size }
-  end
-end
-
-def calc_sizes(files)
-  files.map do |file|
-    file_stat = File.stat(file)
-    file_stat.size
-  end
+def calc_sizes(files_lines)
+  files_lines.map { |file_lines| file_lines.join.bytesize }
 end
 
 def lines_num(lines)
@@ -76,7 +83,7 @@ def lines_num(lines)
 end
 
 def calc_width(nums)
-  width = nums.map { |num| num.to_s.size }.max
+  width = nums.values.map { |num| num.to_s.size }.max
   width + 1 > DEFAULT_WIDTH ? width + 1 : DEFAULT_WIDTH
 end
 
@@ -85,10 +92,10 @@ def print_info(files, total_nums, options)
   output = ''
   is_option_none = options.values.none?
   files.each do |file|
-    output += file[0].to_s.rjust(width) if options['l'] || is_option_none
-    output += file[1].to_s.rjust(width) if options['w'] || is_option_none
-    output += file[2].to_s.rjust(width) if options['c'] || is_option_none
-    output += " #{file[3]}\n"
+    output += file['lines_num'].to_s.rjust(width) if options['l'] || is_option_none
+    output += file['words_num'].to_s.rjust(width) if options['w'] || is_option_none
+    output += file['file_size'].to_s.rjust(width) if options['c'] || is_option_none
+    output += " #{file['file_name']}\n"
   end
   print output
 end
@@ -97,9 +104,9 @@ def print_total(total_nums, options)
   width = calc_width(total_nums)
   output = ''
   is_option_none = options.values.none?
-  output += total_nums[0].to_s.rjust(width) if options['l'] || is_option_none
-  output += total_nums[1].to_s.rjust(width) if options['w'] || is_option_none
-  output += total_nums[2].to_s.rjust(width) if options['c'] || is_option_none
+  output += total_nums['total_lines'].to_s.rjust(width) if options['l'] || is_option_none
+  output += total_nums['total_words'].to_s.rjust(width) if options['w'] || is_option_none
+  output += total_nums['total_size'].to_s.rjust(width) if options['c'] || is_option_none
   print output
 end
 
