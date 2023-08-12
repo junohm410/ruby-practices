@@ -73,8 +73,7 @@ end
 
 def num_of_lines(lines)
   num_of_lines = lines.size
-  is_last_line_new_line = lines[-1] =~ /\n$/
-  num_of_lines -= 1 unless is_last_line_new_line
+  num_of_lines -= 1 unless lines.last.end_with?("\n")
   num_of_lines = 0 if lines.none?
   num_of_lines
 end
