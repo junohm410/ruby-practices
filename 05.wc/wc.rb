@@ -46,7 +46,7 @@ def print_from_args(args)
     print_total(total_nums, width)
     print " total\n"
   else
-    print_info(formatted_files, width)
+    print_info(formatted_info, width)
   end
 end
 
