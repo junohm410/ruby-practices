@@ -13,9 +13,9 @@ end
 def print_from_stdin(options)
   input_data_lines = $stdin.readlines
 
-  lines_num = lines_num(input_data_lines)
-  words_num = input_data_lines.sum { |line| line.split.size }
-  file_size = input_data_lines.join.bytesize
+  lines_num = count_lines(input_data_lines)
+  words_num = count_words(input_data_lines)
+  file_size = count_bytesize(input_data_lines)
   total_nums = { 'total_lines' => lines_num, 'total_words' => words_num, 'total_size' => file_size }
 
   print_total(total_nums, options)
@@ -37,23 +37,23 @@ end
 def format_files_info(files)
   all_files_lines = files.map { |file| File.open(file, &:readlines) }
 
-  lines_nums = calc_lines_nums(all_files_lines)
+  lines_nums = all_files_lines.map { |file_lines| count_lines(file_lines) }
   total_lines_nums = lines_nums.sum
 
-  words_nums = calc_words_nums(all_files_lines)
+  words_nums = all_files_lines.map { |file_lines| count_words(file_lines) }
   total_words_nums = words_nums.sum
 
-  file_sizes = calc_sizes(all_files_lines)
+  file_sizes = all_files_lines.map { |file_lines| count_bytesize(file_lines) }
   total_size = file_sizes.sum
 
   lines_words_sizes = [lines_nums, words_nums, file_sizes, files].transpose
-  keys = %w[lines_num words_num file_size file_name]
+  lines_words_sizes_keys = %w[lines_num words_num file_size file_name]
   formatted_3_elemetnts_info =
-    lines_words_sizes.map { |info| [keys, info].transpose.to_h }
+    lines_words_sizes.map { |file_info| [lines_words_sizes_keys, file_info].transpose.to_h }
 
   total_nums = [total_lines_nums, total_words_nums, total_size]
-  keys = %w[total_lines total_words total_size]
-  formatted_total_nums = [keys, total_nums].transpose.to_h
+  total_nums_keys = %w[total_lines total_words total_size]
+  formatted_total_nums = [total_nums_keys, total_nums].transpose.to_h
 
   {
     lines_words_sizes: formatted_3_elemetnts_info,
@@ -61,24 +61,18 @@ def format_files_info(files)
   }
 end
 
-def calc_lines_nums(files_lines)
-  files_lines.map { |file_lines| lines_num(file_lines) }
-end
-
-def calc_words_nums(files_lines)
-  files_lines.map do |file_lines|
-    file_lines.sum { |line| line.split.size }
-  end
-end
-
-def calc_sizes(files_lines)
-  files_lines.map { |file_lines| file_lines.join.bytesize }
-end
-
-def lines_num(lines)
+def count_lines(lines)
   lines_num = lines.size
   lines_num -= 1 unless lines.none? || lines.last.end_with?("\n")
   lines_num
+end
+
+def count_words(lines)
+  lines.sum { |line| line.split.size }
+end
+
+def count_bytesize(lines)
+  lines.join.bytesize
 end
 
 def calc_width(nums)
