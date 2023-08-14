@@ -64,8 +64,7 @@ end
 
 def count_lines(lines)
   lines_num = lines.size
-  lines_num -= 1 unless lines.none? || lines.last.end_with?("\n")
-  lines_num
+  lines.none? || lines.last.end_with?("\n") ? lines_num : lines_num - 1
 end
 
 def count_words(lines)
