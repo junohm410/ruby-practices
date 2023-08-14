@@ -3,7 +3,7 @@
 
 require 'optparse'
 
-DEFAULT_WIDTH = 8
+PRINTING_WIDTH = 8
 
 def main
   options = ARGV.getopts('lwc')
@@ -18,20 +18,15 @@ def print_pipelined_input(options)
   file_size = count_bytesize(input_data_lines)
 
   input_data_properties = [{ 'line_count' => line_count, 'word_count' => word_count, 'file_size' => file_size, 'file_name' => '' }]
-  largest_total_count_digits = [line_count, word_count, file_size].max.to_s.size
-  width = calc_width(largest_total_count_digits)
 
-  print_files_own_properties(input_data_properties, width, options)
+  print_files_own_properties(input_data_properties, options)
 end
 
 def print_specified_files(files, options)
   files_info = format_files_own_properties(files)
 
-  largest_total_count_digits = files_info[:total_counts].values.max.to_s.size
-  width = calc_width(largest_total_count_digits)
-
-  print_files_own_properties(files_info[:unique_properties], width, options)
-  print_total_counts(files_info[:total_counts], width, options) if files.size > 1
+  print_files_own_properties(files_info[:unique_properties], options)
+  print_total_counts(files_info[:total_counts], options) if files.size > 1
 end
 
 def format_files_own_properties(files)
@@ -75,28 +70,24 @@ def count_bytesize(lines)
   lines.join.bytesize
 end
 
-def calc_width(num)
-  num + 1 > DEFAULT_WIDTH ? num + 1 : DEFAULT_WIDTH
-end
-
-def print_files_own_properties(files_properties, width, options)
+def print_files_own_properties(files_properties, options)
   files_properties.each do |file_properties|
-    output = arrange_output_line(file_properties, width, options)
+    output = arrange_output_line(file_properties, options)
     puts output + " #{file_properties['file_name']}"
   end
 end
 
-def print_total_counts(total_counts, width, options)
-  output = arrange_output_line(total_counts, width, options)
+def print_total_counts(total_counts, options)
+  output = arrange_output_line(total_counts, options)
   puts "#{output} total"
 end
 
-def arrange_output_line(properties, width, options)
+def arrange_output_line(properties, options)
   is_option_none = options.values.none?
   output = ''
-  output += properties['line_count'].to_s.rjust(width) if options['l'] || is_option_none
-  output += properties['word_count'].to_s.rjust(width) if options['w'] || is_option_none
-  output += properties['file_size'].to_s.rjust(width) if options['c'] || is_option_none
+  output += properties['line_count'].to_s.rjust(PRINTING_WIDTH) if options['l'] || is_option_none
+  output += properties['word_count'].to_s.rjust(PRINTING_WIDTH) if options['w'] || is_option_none
+  output += properties['file_size'].to_s.rjust(PRINTING_WIDTH) if options['c'] || is_option_none
   output
 end
 
