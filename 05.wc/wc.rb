@@ -2,7 +2,6 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'debug'
 
 PRINTING_WIDTH = 8
 
@@ -27,20 +26,9 @@ def print_specified_files(files, options)
   files_info = format_files_own_properties(files)
 
   print_files_own_properties(files_info, options)
-  # print_total_counts(files_info[:total_counts], options) if files.size > 1
 end
 
 def format_files_own_properties(files)
-  # all_files_lines = files.map { |file| File.open(file, &:readlines) }
-
-  # line_counts = all_files_lines.map { |file_lines| count_lines(file_lines) }
-  # total_line_count = line_counts.sum
-
-  # word_counts = all_files_lines.map { |file_lines| count_words(file_lines) }
-  # total_word_count = word_counts.sum
-
-  # file_sizes = all_files_lines.map { |file_lines| count_bytesize(file_lines) }
-  # total_size = file_sizes.sum
 
   formatted_files_own_properties_sets =
     files.map do |file|
@@ -51,12 +39,6 @@ def format_files_own_properties(files)
       file_name = file
       { line_count:, word_count:, file_size:, file_name: }
     end
-
-  # files_own_properties_sets = [line_counts, word_counts, file_sizes, files].transpose
-  # formatted_files_own_properties_sets =
-  #   files_own_properties_sets.map do |file_properties|
-  #     { 'line_count' => file_properties[0], 'word_count' => file_properties[1], 'file_size' => file_properties[2], 'file_name' => file_properties[3] }
-  #   end
   
   if files.size > 1
     line_count = 0
@@ -71,14 +53,6 @@ def format_files_own_properties(files)
     formatted_files_own_properties_sets << { line_count:, word_count:, file_size:, file_name: }
   end
 
-  # total_counts = [total_line_count, total_word_count, total_size]
-  # total_counts_keys = %w[line_count word_count file_size]
-  # formatted_total_counts = [total_counts_keys, total_counts].transpose.to_h
-
-  # {
-  #   unique_properties: formatted_files_own_properties_sets,
-  #   total_counts: formatted_total_counts
-  # }
   formatted_files_own_properties_sets
 end
 
