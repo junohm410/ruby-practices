@@ -13,39 +13,35 @@ end
 def print_pipelined_input(options)
   stdin_lines = $stdin.readlines
 
-  stdin_prop = format_file_prop(stdin_lines)
-  stdin_prop[:file_name] = ''
+  stdin_props = count_file_props(stdin_lines)
+  stdin_props[:file_name] = ''
 
-  print_file_props([stdin_prop], options)
+  print_file_props_list([stdin_props], options)
 end
 
 def print_specified_files(files, options)
-  total_file_prop_count = { line_count: 0, word_count: 0, bytesize: 0, file_name: 'total' }
+  total = { line_count: 0, word_count: 0, bytesize: 0, file_name: 'total' }
 
-  file_props =
+  file_props_list =
     files.map do |file|
       file_lines = File.open(file, &:readlines)
-      file_prop = format_file_prop(file_lines, total_file_prop_count)
-      file_prop[:file_name] = file
-      file_prop
+      file_props = count_file_props(file_lines)
+      total[:line_count] += file_props[:line_count]
+      total[:word_count] += file_props[:word_count]
+      total[:bytesize] += file_props[:bytesize]
+      file_props[:file_name] = file
+      file_props
     end
 
-  file_props << total_file_prop_count if files.size > 1
+  file_props_list << total if files.size > 1
 
-  print_file_props(file_props, options)
+  print_file_props_list(file_props_list, options)
 end
 
-def format_file_prop(file_lines, total_file_prop_count = nil)
+def count_file_props(file_lines)
   line_count = count_lines(file_lines)
   word_count = count_words(file_lines)
   bytesize = count_bytesize(file_lines)
-
-  unless total_file_prop_count.nil?
-    total_file_prop_count[:line_count] += line_count
-    total_file_prop_count[:word_count] += word_count
-    total_file_prop_count[:bytesize] += bytesize
-  end
-
   { line_count:, word_count:, bytesize: }
 end
 
@@ -62,19 +58,19 @@ def count_bytesize(lines)
   lines.join.bytesize
 end
 
-def print_file_props(file_props, options)
-  file_props.each do |file_prop|
-    arranged_output_line = arrange_output_line(file_prop, options)
-    puts arranged_output_line + " #{file_prop[:file_name]}"
+def print_file_props_list(file_props_list, options)
+  file_props_list.each do |file_props|
+    arranged_output_line = arrange_output_line(file_props, options)
+    puts arranged_output_line + " #{file_props[:file_name]}"
   end
 end
 
-def arrange_output_line(file_prop, options)
+def arrange_output_line(file_props, options)
   is_option_none = options.values.none?
   output_line = ''
-  output_line += file_prop[:line_count].to_s.rjust(PRINTING_WIDTH) if options['l'] || is_option_none
-  output_line += file_prop[:word_count].to_s.rjust(PRINTING_WIDTH) if options['w'] || is_option_none
-  output_line += file_prop[:bytesize].to_s.rjust(PRINTING_WIDTH) if options['c'] || is_option_none
+  output_line += file_props[:line_count].to_s.rjust(PRINTING_WIDTH) if options['l'] || is_option_none
+  output_line += file_props[:word_count].to_s.rjust(PRINTING_WIDTH) if options['w'] || is_option_none
+  output_line += file_props[:bytesize].to_s.rjust(PRINTING_WIDTH) if options['c'] || is_option_none
   output_line
 end
 
