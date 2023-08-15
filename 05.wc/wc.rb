@@ -13,38 +13,40 @@ end
 def print_pipelined_input(options)
   stdin_lines = $stdin.readlines
 
-  line_count = count_lines(stdin_lines)
-  word_count = count_words(stdin_lines)
-  bytesize = count_bytesize(stdin_lines)
+  stdin_prop = format_file_prop(stdin_lines)
+  stdin_prop[:file_name] = ''
 
-  stdin_props = [{ line_count:, word_count:, bytesize:, file_name: '' }]
-
-  print_file_props(stdin_props, options)
+  print_file_props([stdin_prop], options)
 end
 
 def print_specified_files(files, options)
+  total_file_prop_count = { line_count: 0, word_count: 0, bytesize: 0, file_name: 'total' }
+
   file_props =
     files.map do |file|
       file_lines = File.open(file, &:readlines)
-      line_count = count_lines(file_lines)
-      word_count = count_words(file_lines)
-      bytesize = count_bytesize(file_lines)
-      { line_count:, word_count:, bytesize:, file_name: file }
+      file_prop = format_file_prop(file_lines, total_file_prop_count)
+      file_prop[:file_name] = file
+      file_prop
     end
 
-  if files.size > 1
-    line_count = 0
-    word_count = 0
-    bytesize = 0
-    file_props.each do |file_prop|
-      line_count += file_prop[:line_count]
-      word_count += file_prop[:word_count]
-      bytesize += file_prop[:bytesize]
-    end
-    file_props << { line_count:, word_count:, bytesize:, file_name: 'total' }
-  end
+  file_props << total_file_prop_count if files.size > 1
 
   print_file_props(file_props, options)
+end
+
+def format_file_prop(file_lines, total_prop_count = nil)
+  line_count = count_lines(file_lines)
+  word_count = count_words(file_lines)
+  bytesize = count_bytesize(file_lines)
+
+  unless total_prop_count.nil?
+    total_prop_count[:line_count] += line_count
+    total_prop_count[:word_count] += word_count
+    total_prop_count[:bytesize] += bytesize
+  end
+
+  { line_count:, word_count:, bytesize: }
 end
 
 def count_lines(lines)
