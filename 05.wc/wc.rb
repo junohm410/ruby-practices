@@ -11,15 +11,15 @@ def main
 end
 
 def print_pipelined_input(options)
-  input_data_lines = $stdin.readlines
+  stdin_lines = $stdin.readlines
 
-  line_count = count_lines(input_data_lines)
-  word_count = count_words(input_data_lines)
-  bytesize = count_bytesize(input_data_lines)
+  line_count = count_lines(stdin_lines)
+  word_count = count_words(stdin_lines)
+  bytesize = count_bytesize(stdin_lines)
 
-  input_data_props = [{ line_count:, word_count:, bytesize:, file_name: '' }]
+  stdin_props = [{ line_count:, word_count:, bytesize:, file_name: '' }]
 
-  print_file_props(input_data_props, options)
+  print_file_props(stdin_props, options)
 end
 
 def print_specified_files(files, options)
