@@ -35,15 +35,15 @@ def print_specified_files(files, options)
   print_file_props(file_props, options)
 end
 
-def format_file_prop(file_lines, total_prop_count = nil)
+def format_file_prop(file_lines, total_file_prop_count = nil)
   line_count = count_lines(file_lines)
   word_count = count_words(file_lines)
   bytesize = count_bytesize(file_lines)
 
-  unless total_prop_count.nil?
-    total_prop_count[:line_count] += line_count
-    total_prop_count[:word_count] += word_count
-    total_prop_count[:bytesize] += bytesize
+  unless total_file_prop_count.nil?
+    total_file_prop_count[:line_count] += line_count
+    total_file_prop_count[:word_count] += word_count
+    total_file_prop_count[:bytesize] += bytesize
   end
 
   { line_count:, word_count:, bytesize: }
