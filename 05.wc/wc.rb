@@ -60,18 +60,18 @@ end
 
 def print_file_props_list(file_props_list, options)
   file_props_list.each do |file_props|
-    arranged_output_line = arrange_output_line(file_props, options)
-    puts arranged_output_line + " #{file_props[:file_name]}"
+    line = arrange_line(file_props, options)
+    puts line + " #{file_props[:file_name]}"
   end
 end
 
-def arrange_output_line(file_props, options)
+def arrange_line(file_props, options)
   is_option_none = options.values.none?
-  output_line = ''
-  output_line += file_props[:line_count].to_s.rjust(PRINTING_WIDTH) if options['l'] || is_option_none
-  output_line += file_props[:word_count].to_s.rjust(PRINTING_WIDTH) if options['w'] || is_option_none
-  output_line += file_props[:bytesize].to_s.rjust(PRINTING_WIDTH) if options['c'] || is_option_none
-  output_line
+  line = ''
+  line += file_props[:line_count].to_s.rjust(PRINTING_WIDTH) if options['l'] || is_option_none
+  line += file_props[:word_count].to_s.rjust(PRINTING_WIDTH) if options['w'] || is_option_none
+  line += file_props[:bytesize].to_s.rjust(PRINTING_WIDTH) if options['c'] || is_option_none
+  line
 end
 
 main
