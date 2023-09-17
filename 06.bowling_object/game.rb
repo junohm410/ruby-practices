@@ -9,26 +9,26 @@ class Game
   FINAL_FRAME_IDX = 9
   FRAME_BEFORE_FINAL_IDX = 8
 
-  def initialize(score_marks_string)
-    score_marks = score_marks_string.split(',')
+  def initialize(pinfall_string)
+    pinfalls = pinfall_string.split(',')
     @frames = []
-    same_frame_score_marks = []
-    score_marks.each do |mark|
+    same_frame_pinfalls = []
+    pinfalls.each do |pinfall|
       if @frames.size < FRAME_BEFORE_FINAL
-        if mark == 'X'
-          @frames << Frame.new(mark)
+        if pinfall == 'X'
+          @frames << Frame.new(pinfall)
         else
-          same_frame_score_marks << mark
-          if same_frame_score_marks.length == SHOTS_PER_NORMAL_FRAME
-            @frames << Frame.new(*same_frame_score_marks)
-            same_frame_score_marks = []
+          same_frame_pinfalls << pinfall
+          if same_frame_pinfalls.length == SHOTS_PER_NORMAL_FRAME
+            @frames << Frame.new(*same_frame_pinfalls)
+            same_frame_pinfalls = []
           end
         end
       else
-        same_frame_score_marks << mark
+        same_frame_pinfalls << pinfall
       end
     end
-    @frames << Frame.new(*same_frame_score_marks)
+    @frames << Frame.new(*same_frame_pinfalls)
   end
 
   def score

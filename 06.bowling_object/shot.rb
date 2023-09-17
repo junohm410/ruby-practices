@@ -1,15 +1,15 @@
 # frozen_string_literal: true
 
 class Shot
-  attr_reader :score_mark
+  attr_reader :pinfall
 
-  def initialize(score_mark)
-    @score_mark = score_mark
+  def initialize(pinfall)
+    @pinfall = pinfall
   end
 
   def score
-    return 10 if score_mark == 'X'
+    return 10 if pinfall == 'X'
 
-    score_mark.to_i
+    pinfall.to_i
   end
 end
