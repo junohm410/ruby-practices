@@ -3,7 +3,7 @@
 require 'minitest/autorun'
 require_relative 'game'
 
-class TestClass < Minitest::Test
+class BowlingTest < Minitest::Test
   def test_game_score_one
     game = Game.new('6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,6,4,5')
     assert_equal 139, game.score
@@ -35,7 +35,7 @@ class TestClass < Minitest::Test
   end
 
   def test_game_score_seven
-    game = Game.new('X,0,0,X,0,0,X,0,0,X,0,0,X,0,0 ')
+    game = Game.new('X,0,0,X,0,0,X,0,0,X,0,0,X,0,0')
     assert_equal 50, game.score
   end
 end
