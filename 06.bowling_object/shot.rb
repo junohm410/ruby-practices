@@ -8,8 +8,6 @@ class Shot
   end
 
   def score
-    return 10 if pinfall == 'X'
-
     pinfall.to_i
   end
 end

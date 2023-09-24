@@ -16,10 +16,10 @@ class Frame
   end
 
   def strike?
-    first_shot.pinfall == 'X'
+    first_shot.pinfall == '10'
   end
 
   def spare?
-    [first_shot, second_shot].sum(&:score) == 10
+    [first_shot, second_shot].sum(&:score) == 10 && !strike?
   end
 end
