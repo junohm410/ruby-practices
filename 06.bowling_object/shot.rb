@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
 class Shot
-  attr_reader :pinfall
+  attr_reader :fallen_pin
 
-  def initialize(pinfall)
-    @pinfall = pinfall
+  def initialize(fallen_pin)
+    @fallen_pin = fallen_pin
   end
 
   def score
-    pinfall.to_i
+    fallen_pin.to_i
   end
 end
