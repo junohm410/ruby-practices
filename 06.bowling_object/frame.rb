@@ -19,7 +19,7 @@ class Frame
   end
 
   def strike?
-    first_shot.fallen_pin == '10'
+    first_shot.score == 10
   end
 
   def spare?
@@ -32,7 +32,8 @@ class Frame
     same_frame_pins = []
     fallen_pins.each do |fallen_pin|
       current_frame = frames.size + 1
-      Frame.organize_same_frame_pins(fallen_pin, same_frame_pins, current_frame)
+      same_frame_pins << Frame.collect_pin(fallen_pin, current_frame)
+      same_frame_pins = same_frame_pins.flatten
       if frames.size < (FINAL_FRAME - 1) && same_frame_pins.size == SHOTS_PER_NORMAL_FRAME
         frames << Frame.new(*same_frame_pins)
         same_frame_pins = []
@@ -41,12 +42,11 @@ class Frame
     frames << Frame.new(*same_frame_pins)
   end
 
-  def self.organize_same_frame_pins(fallen_pin, same_frame_pins, current_frame)
+  def self.collect_pin(fallen_pin, current_frame)
     if fallen_pin == 'X'
-      same_frame_pins << '10'
-      same_frame_pins << nil if current_frame < FINAL_FRAME
+      current_frame < FINAL_FRAME ? ['10', nil] : '10'
     else
-      same_frame_pins << fallen_pin
+      fallen_pin
     end
   end
 end
