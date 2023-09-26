@@ -33,7 +33,7 @@ class Frame
     fallen_pins.each do |fallen_pin|
       current_frame = frames.size + 1
       same_frame_pins += Frame.collect_pin(fallen_pin, current_frame)
-      if frames.size < (FINAL_FRAME - 1) && same_frame_pins.size == SHOTS_PER_NORMAL_FRAME
+      if current_frame < FINAL_FRAME && same_frame_pins.size == SHOTS_PER_NORMAL_FRAME
         frames << Frame.new(*same_frame_pins)
         same_frame_pins = []
       end
