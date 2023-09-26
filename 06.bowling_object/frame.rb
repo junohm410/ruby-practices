@@ -15,15 +15,15 @@ class Frame
   end
 
   def score
-    [first_shot, second_shot, @third_shot].sum(&:score)
+    [@first_shot, @second_shot, @third_shot].sum(&:score)
   end
 
   def strike?
-    first_shot.score == 10
+    @first_shot.score == 10
   end
 
   def spare?
-    [first_shot, second_shot].sum(&:score) == 10 && !strike?
+    [@first_shot, @second_shot].sum(&:score) == 10 && !strike?
   end
 
   def self.organize_all_frames(game_result)
