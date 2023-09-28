@@ -20,10 +20,11 @@ class File
     @hard_links_count = file_stat.nlink
     @owner = Etc.getpwuid(file_stat.uid).name
     @group = Etc.getgrgid(file_stat.gid).name
-    @file_size = file_stat.size
+    @file_size = file_stat.chardev? || file_stat.blockdev? ? file.device_file_num : file_stat.size
     @updated_at = file_stat.mtime
     @block_size = file_stat.blocks
     @file_mode = file_stat.mode
+    @file_stat = file_stat
   end
 
   def format_file_mode
@@ -33,6 +34,13 @@ class File
     special_authority = octal_mode[2]
     rwx_modes = octal_mode[3..5]
     format_file_type(file_type) + format_right(rwx_modes, special_authority)
+  end
+
+  def device_file_num
+    major_num = @file_stat.rdev_major.to_s(16)
+    minor_num = @file_stat.rdev_minor.to_s(16)
+    minor_num.insert(0, '0') if minor_num.size == 1
+    "0x#{major_num}0000#{minor_num}"
   end
 
   private
@@ -85,6 +93,6 @@ class File
   end
 end
 
-file = File.new('ls_command.rb')
-puts file.name, file.hard_links_count, file.owner, file.group, file.file_size, file.updated_at, file.block_size, file.file_mode
-puts file.format_file_mode
+# file = File.new('ls_command.rb')
+# puts file.name, file.hard_links_count, file.owner, file.group, file.file_size, file.updated_at, file.block_size, file.file_mode
+# puts file.format_file_mode
