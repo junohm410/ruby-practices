@@ -2,7 +2,7 @@
 
 require 'etc'
 
-class File
+class OwnedFile
   SUID = '4'
   SGID = '2'
   STICKY_BIT = '1'
@@ -14,17 +14,16 @@ class File
   attr_reader :name, :hard_links_count, :owner, :group, :file_size, :updated_at, :block_size, :file_mode
 
   def initialize(file_name)
-    file_stat = File.stat(file_name)
+    @file_stat = File.symlink?(file_name) ? File.lstat(file_name) : File.stat(file_name)
 
     @name = file_name
-    @hard_links_count = file_stat.nlink
-    @owner = Etc.getpwuid(file_stat.uid).name
-    @group = Etc.getgrgid(file_stat.gid).name
-    @file_size = file_stat.chardev? || file_stat.blockdev? ? file.device_file_num : file_stat.size
-    @updated_at = file_stat.mtime
-    @block_size = file_stat.blocks
-    @file_mode = file_stat.mode
-    @file_stat = file_stat
+    @hard_links_count = @file_stat.nlink
+    @owner = Etc.getpwuid(@file_stat.uid).name
+    @group = Etc.getgrgid(@file_stat.gid).name
+    @file_size = @file_stat.chardev? || @file_stat.blockdev? ? device_file_num : @file_stat.size
+    @updated_at = @file_stat.mtime
+    @block_size = @file_stat.blocks
+    @file_mode = @file_stat.mode
   end
 
   def format_file_mode
@@ -36,14 +35,22 @@ class File
     format_file_type(file_type) + format_right(rwx_modes, special_authority)
   end
 
+  def read_link
+    File.readlink(name)
+  end
+
+  def symbolic_link?
+    File.symlink?(name)
+  end
+
+  private
+
   def device_file_num
     major_num = @file_stat.rdev_major.to_s(16)
     minor_num = @file_stat.rdev_minor.to_s(16)
     minor_num.insert(0, '0') if minor_num.size == 1
     "0x#{major_num}0000#{minor_num}"
   end
-
-  private
 
   def format_file_type(file_type)
     {
@@ -92,7 +99,3 @@ class File
     right[-1] == 'x' ? right.gsub(/x$/, 't') : right.gsub(/-$/, 'T')
   end
 end
-
-# file = File.new('ls_command.rb')
-# puts file.name, file.hard_links_count, file.owner, file.group, file.file_size, file.updated_at, file.block_size, file.file_mode
-# puts file.format_file_mode

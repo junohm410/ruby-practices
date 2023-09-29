@@ -11,7 +11,7 @@ class LsCommand
     flag = @options['a'] ? File::FNM_DOTMATCH : 0
     file_names = Dir.glob('*', flag)
     file_names = file_names.reverse if @options['r']
-    @files = file_names.map { |file_name| File.new(file_name) }
+    @files = file_names.map { |file_name| OwnedFile.new(file_name) }
     @width_file_name = printing_width(file_names)
   end
 
@@ -74,6 +74,7 @@ class LsCommand
       group = file.group
 
       print "#{mode}  #{link.rjust(width_link)} #{owner.ljust(width_uname)}  #{group.rjust(width_gname)}  #{size.rjust(width_size)}  #{updated_at} #{file.name}"
+      print " -> #{file.read_link}" if file.symbolic_link?
       print "\n"
     end
   end
