@@ -2,6 +2,8 @@
 
 require 'optparse'
 require_relative 'file'
+require_relative 'formatter'
+require_relative 'short_formatter'
 
 class LsCommand
   NUMBER_OF_COLUMNS = 3
@@ -14,16 +16,14 @@ class LsCommand
     @files = file_names.map { |file_name| OwnedFile.new(file_name) }
   end
 
-  def self.find_longest_string_length(file_prop_strings)
-    file_prop_strings.map(&:size).max
-  end
-
   def display_files
     return display_files_in_detail if @options['l']
 
-    formatted_files = format_files(count_displayed_rows)
+    formatter = ShortFormatter.new(@files)
+    formatted_files = formatter.format_files
     file_names = @files.map(&:name)
-    file_name_width = LsCommand.find_longest_string_length(file_names)
+    file_name_width = Formatter.find_longest_string_length(file_names)
+
     formatted_files.each do |row_files|
       row_files.each { |file| file == '' ? print(file) : print("#{file.name.ljust(file_name_width)} ") }
       print "\n"
@@ -32,28 +32,11 @@ class LsCommand
 
   private
 
-  def format_files(rows_count)
-    files_cols = []
-    @files.each_slice(rows_count) do |files_col|
-      files_cols << files_col
-    end
-
-    last_col = files_cols.last
-    last_col << '' until last_col.size == rows_count
-
-    files_cols.transpose
-  end
-
-  def count_displayed_rows
-    files_count = @files.size
-    files_count.ceildiv(NUMBER_OF_COLUMNS)
-  end
-
   def display_files_in_detail
-    hard_links_count_width = LsCommand.find_longest_string_length(organize_all_hard_links_counts)
-    owner_width = LsCommand.find_longest_string_length(organize_all_owners)
-    group_width = LsCommand.find_longest_string_length(organize_all_groups)
-    file_size_width = LsCommand.find_longest_string_length(organize_all_file_sizes)
+    hard_links_count_width = Formatter.find_longest_string_length(organize_all_hard_links_counts)
+    owner_width = Formatter.find_longest_string_length(organize_all_owners)
+    group_width = Formatter.find_longest_string_length(organize_all_groups)
+    file_size_width = Formatter.find_longest_string_length(organize_all_file_sizes)
 
     print "total #{calculate_total_block_sizes}\n"
     @files.each do |file|
@@ -65,7 +48,7 @@ class LsCommand
       updated_at = file.updated_at.strftime('%-m %_d %H:%M')
 
       print "#{formatted_file_mode}  #{hard_links_count.rjust(hard_links_count_width)} #{owner.ljust(owner_width)}  "
-      print "#{group.rjust(group_width)}  #{file_size.rjust(file_size_width)}  #{updated_at} #{file.name}"
+      print "#{group.rjust(group_width)}  #{file_size.rjust(file_size_width)}#{updated_at.rjust(12)} #{file.name}"
       print " -> #{file.read_link}" if file.symbolic_link?
       print "\n"
     end
