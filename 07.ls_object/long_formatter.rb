@@ -14,24 +14,22 @@ class LongFormatter < Formatter
     owner_width = Formatter.find_longest_string_length(organize_all_owners)
     group_width = Formatter.find_longest_string_length(organize_all_groups)
     file_size_width = Formatter.find_longest_string_length(organize_all_file_sizes)
-    @files.map do |file|
-      formatted_file_mode = format_file_mode(file.file_mode)
-      hard_links_count = file.hard_links_count.to_s
-      owner = file.owner
-      group = file.group
-      file_size = file.file_size.to_s
-      updated_at = file.updated_at.strftime('%-m %_d %H:%M')
-      name = file.name
-      formatted_files = ''
-      formatted_files += "#{formatted_file_mode}  #{hard_links_count.rjust(hard_links_count_width)} #{owner.ljust(owner_width)}  "
-      formatted_files += "#{group.rjust(group_width)}  #{file_size.rjust(file_size_width)}#{updated_at.rjust(12)} #{name}"
-      formatted_files += " -> #{file.read_link}" if file.symbolic_link?
-      formatted_files
-    end
-  end
-
-  def calculate_total_block_sizes
-    @files.sum(&:block_size)
+    formatted_files =
+      @files.map do |file|
+        formatted_file_mode = format_file_mode(file.file_mode)
+        hard_links_count = file.hard_links_count.to_s
+        owner = file.owner
+        group = file.group
+        file_size = file.file_size.to_s
+        updated_at = file.updated_at.strftime('%-m %_d %H:%M')
+        name = file.name
+        formatted_file = ''
+        formatted_file += "#{formatted_file_mode}  #{hard_links_count.rjust(hard_links_count_width)} #{owner.ljust(owner_width)}  "
+        formatted_file += "#{group.rjust(group_width)}  #{file_size.rjust(file_size_width)}#{updated_at.rjust(12)} #{name}"
+        formatted_file += " -> #{file.read_link}" if file.symbolic_link?
+        formatted_file
+      end
+    formatted_files.unshift("total #{calculate_total_block_sizes}")
   end
 
   private
@@ -106,5 +104,9 @@ class LongFormatter < Formatter
 
   def apply_sticky_bit(file_right)
     file_right[-1] == 'x' ? file_right.gsub(/x$/, 't') : file_right.gsub(/-$/, 'T')
+  end
+
+  def calculate_total_block_sizes
+    @files.sum(&:block_size)
   end
 end

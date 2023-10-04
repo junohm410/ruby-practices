@@ -18,7 +18,7 @@ class ShortFormatter < Formatter
     last_col = files_cols.last
     last_col << '' until last_col.size == displayed_rows_count
 
-    files_cols.transpose
+    files_cols.transpose.map { |files_row| files_row.join(' ') }
   end
 
   private

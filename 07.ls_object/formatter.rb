@@ -8,6 +8,4 @@ class Formatter
   def self.find_longest_string_length(file_prop_strings)
     file_prop_strings.map(&:size).max
   end
-
-  def format_files; end
 end
