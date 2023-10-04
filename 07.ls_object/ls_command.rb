@@ -4,6 +4,7 @@ require 'optparse'
 require_relative 'file'
 require_relative 'formatter'
 require_relative 'short_formatter'
+require_relative 'long_formatter'
 
 class LsCommand
   NUMBER_OF_COLUMNS = 3
@@ -33,44 +34,10 @@ class LsCommand
   private
 
   def display_files_in_detail
-    hard_links_count_width = Formatter.find_longest_string_length(organize_all_hard_links_counts)
-    owner_width = Formatter.find_longest_string_length(organize_all_owners)
-    group_width = Formatter.find_longest_string_length(organize_all_groups)
-    file_size_width = Formatter.find_longest_string_length(organize_all_file_sizes)
+    formatter = LongFormatter.new(@files)
+    formatted_files = formatter.format_files
 
-    print "total #{calculate_total_block_sizes}\n"
-    @files.each do |file|
-      formatted_file_mode = file.format_file_mode
-      hard_links_count = file.hard_links_count.to_s
-      owner = file.owner
-      group = file.group
-      file_size = file.file_size.to_s
-      updated_at = file.updated_at.strftime('%-m %_d %H:%M')
-
-      print "#{formatted_file_mode}  #{hard_links_count.rjust(hard_links_count_width)} #{owner.ljust(owner_width)}  "
-      print "#{group.rjust(group_width)}  #{file_size.rjust(file_size_width)}#{updated_at.rjust(12)} #{file.name}"
-      print " -> #{file.read_link}" if file.symbolic_link?
-      print "\n"
-    end
-  end
-
-  def organize_all_hard_links_counts
-    @files.map { |file| file.hard_links_count.to_s }
-  end
-
-  def organize_all_owners
-    @files.map(&:owner)
-  end
-
-  def organize_all_groups
-    @files.map(&:group)
-  end
-
-  def organize_all_file_sizes
-    @files.map { |file| file.file_size.to_s }
-  end
-
-  def calculate_total_block_sizes
-    @files.sum(&:block_size)
+    puts "total #{formatter.calculate_total_block_sizes}"
+    formatted_files.each { |file| puts file }
   end
 end
