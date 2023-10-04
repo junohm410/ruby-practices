@@ -22,13 +22,8 @@ class LsCommand
 
     formatter = ShortFormatter.new(@files)
     formatted_files = formatter.format_files
-    file_names = @files.map(&:name)
-    file_name_width = Formatter.find_longest_string_length(file_names)
 
-    formatted_files.each do |row_files|
-      row_files.each { |file| file == '' ? print(file) : print("#{file.name.ljust(file_name_width)} ") }
-      print "\n"
-    end
+    formatted_files.each { |row_files| puts row_files.join(' ') }
   end
 
   private

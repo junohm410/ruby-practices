@@ -6,14 +6,17 @@ require_relative 'formatter'
 
 class ShortFormatter < Formatter
   def format_files
-    files_cols = []
-    rows_count = count_displayed_rows
-    @files.each_slice(rows_count) do |files_col|
-      files_cols << files_col
-    end
+    file_names = @files.map(&:name)
+    file_name_width = Formatter.find_longest_string_length(file_names)
+    displayed_rows_count = count_displayed_rows
+
+    files_cols =
+      @files.each_slice(displayed_rows_count).map do |files_col|
+        files_col.map { |file| file.name.ljust(file_name_width) }
+      end
 
     last_col = files_cols.last
-    last_col << '' until last_col.size == rows_count
+    last_col << '' until last_col.size == displayed_rows_count
 
     files_cols.transpose
   end
