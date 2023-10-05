@@ -2,7 +2,7 @@
 
 require 'etc'
 
-class OwnedFile
+class ObtainedFile
   attr_reader :name
 
   def initialize(file_name)
