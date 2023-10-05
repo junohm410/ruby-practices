@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative 'ls_command'
-require_relative 'obtained_file'
 require_relative 'formatter'
 
 class ShortFormatter < Formatter
