@@ -14,6 +14,27 @@ class LongFormatter < Formatter
   DISPLAYED_DATE_FORMAT = '%-m %_d %H:%M'
   DISPLAYED_DATE_WIDTH = 12
 
+  FILE_TYPE_TABLE = {
+    '01' => 'p',
+    '02' => 'c',
+    '04' => 'd',
+    '06' => 'b',
+    '10' => '-',
+    '12' => 'l',
+    '14' => 's'
+  }.freeze
+
+  EXECUTION_MODE_TABLE = {
+    '0' => '---',
+    '1' => '--x',
+    '2' => '-w-',
+    '3' => '-wx',
+    '4' => 'r--',
+    '5' => 'r-x',
+    '6' => 'rw-',
+    '7' => 'rwx'
+  }.freeze
+
   def format_files
     longest_hard_links_string_length = Formatter.find_longest_string_length(organize_all_hard_links_counts)
     longest_owner_string_length = Formatter.find_longest_string_length(organize_all_owners)
@@ -57,53 +78,38 @@ class LongFormatter < Formatter
     octal_mode.insert(0, '0') if octal_mode.size == 5
     file_type = octal_mode[0..1]
     special_authority = octal_mode[2]
-    rwx_modes = octal_mode[3..5]
-    format_file_type(file_type) + format_file_right(rwx_modes, special_authority)
+    execution_modes = octal_mode[3..5]
+    FILE_TYPE_TABLE[file_type] + format_file_right(execution_modes, special_authority)
   end
 
-  def format_file_type(file_type)
-    {
-      '01' => 'p',
-      '02' => 'c',
-      '04' => 'd',
-      '06' => 'b',
-      '10' => '-',
-      '12' => 'l',
-      '14' => 's'
-    }[file_type]
-  end
-
-  def format_file_right(rwx_modes, special_authority)
+  def format_file_right(execution_modes, special_authority)
     formatted_file_right = ''
-    rwx_modes.each_char.with_index do |rwx_mode, i|
-      formatted_rwx_mode = format_rwx_mode(rwx_mode)
-      formatted_rwx_mode = apply_suid_and_sgid(formatted_rwx_mode) if special_authority == SUID && i == OWNER
-      formatted_rwx_mode = apply_suid_and_sgid(formatted_rwx_mode) if special_authority == SGID && i == GROUP
-      formatted_rwx_mode = apply_sticky_bit(formatted_rwx_mode) if special_authority == STICKY_BIT && i == OTHER_USER
-      formatted_file_right += formatted_rwx_mode
+    execution_modes.each_char.with_index do |execution_mode, i|
+      formatted_execution_mode = format_rwx_mode(execution_mode, i, special_authority)
+      formatted_file_right += formatted_execution_mode
     end
     formatted_file_right
   end
 
-  def format_rwx_mode(rwx_mode)
-    {
-      '0' => '---',
-      '1' => '--x',
-      '2' => '-w-',
-      '3' => '-wx',
-      '4' => 'r--',
-      '5' => 'r-x',
-      '6' => 'rw-',
-      '7' => 'rwx'
-    }[rwx_mode]
+  def format_rwx_mode(execution_mode, user_type_index, special_authority)
+    formatted_execution_mode = EXECUTION_MODE_TABLE[execution_mode]
+    if special_authority == SUID && user_type_index == OWNER
+      apply_suid_and_sgid(formatted_execution_mode)
+    elsif special_authority == SGID && user_type_index == GROUP
+      apply_suid_and_sgid(formatted_execution_mode)
+    elsif special_authority == STICKY_BIT && user_type_index == OTHER_USER
+      apply_sticky_bit(formatted_execution_mode)
+    else
+      formatted_execution_mode
+    end
   end
 
-  def apply_suid_and_sgid(formatted_rwx_mode)
-    formatted_rwx_mode[-1] == 'x' ? formatted_rwx_mode.gsub(/x$/, 's') : formatted_rwx_mode.gsub(/-$/, 'S')
+  def apply_suid_and_sgid(formatted_execution_mode)
+    formatted_execution_mode[-1] == 'x' ? formatted_execution_mode.gsub(/x$/, 's') : formatted_execution_mode.gsub(/-$/, 'S')
   end
 
-  def apply_sticky_bit(formatted_rwx_mode)
-    formatted_rwx_mode[-1] == 'x' ? formatted_rwx_mode.gsub(/x$/, 't') : formatted_rwx_mode.gsub(/-$/, 'T')
+  def apply_sticky_bit(formatted_execution_mode)
+    formatted_execution_mode[-1] == 'x' ? formatted_execution_mode.gsub(/x$/, 't') : formatted_execution_mode.gsub(/-$/, 'T')
   end
 
   def calculate_total_block_sizes
