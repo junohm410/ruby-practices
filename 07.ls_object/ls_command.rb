@@ -7,8 +7,6 @@ require_relative 'short_formatter'
 require_relative 'long_formatter'
 
 class LsCommand
-  NUMBER_OF_COLUMNS = 3
-
   def initialize
     @options = ARGV.getopts('arl')
     flag = @options['a'] ? File::FNM_DOTMATCH : 0
