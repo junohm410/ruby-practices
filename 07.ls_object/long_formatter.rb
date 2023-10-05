@@ -93,9 +93,7 @@ class LongFormatter < Formatter
 
   def format_rwx_mode(execution_mode, user_type_index, special_authority)
     formatted_execution_mode = EXECUTION_MODE_TABLE[execution_mode]
-    if special_authority == SUID && user_type_index == OWNER
-      apply_suid_and_sgid(formatted_execution_mode)
-    elsif special_authority == SGID && user_type_index == GROUP
+    if (special_authority == SUID && user_type_index == OWNER) || (special_authority == SGID && user_type_index == GROUP)
       apply_suid_and_sgid(formatted_execution_mode)
     elsif special_authority == STICKY_BIT && user_type_index == OTHER_USER
       apply_sticky_bit(formatted_execution_mode)
