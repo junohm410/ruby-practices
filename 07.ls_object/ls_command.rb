@@ -10,8 +10,7 @@ class LsCommand
     options = ARGV.getopts('arl')
     flag = options['a'] ? File::FNM_DOTMATCH : 0
     file_names = options['r'] ? Dir.glob('*', flag).reverse : Dir.glob('*', flag)
-    files = file_names.map { |file_name| ObtainedFile.new(file_name) }
-    @formatter = options['l'] ? LongFormatter.new(files) : ShortFormatter.new(files)
+    @formatter = options['l'] ? LongFormatter.new(file_names) : ShortFormatter.new(file_names)
   end
 
   def display_files

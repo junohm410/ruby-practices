@@ -3,24 +3,23 @@
 class ShortFormatter
   DISPLAYED_COLUMNS_COUNT = 3
 
-  def initialize(files)
-    @files = files
+  def initialize(file_names)
+    @file_names = file_names
   end
 
   def format_files
-    file_names = @files.map(&:name)
-    longest_file_name_string_length = find_longest_string_length(file_names)
+    longest_file_name_string_length = find_longest_string_length(@file_names)
     displayed_rows_count = count_displayed_rows
 
-    files_cols =
-      @files.each_slice(displayed_rows_count).map do |files_col|
-        files_col.map { |file| file.name.ljust(longest_file_name_string_length) }
+    file_names_cols =
+      @file_names.each_slice(displayed_rows_count).map do |file_names_col|
+        file_names_col.map { |file_name| file_name.ljust(longest_file_name_string_length) }
       end
 
-    last_col = files_cols.last
+    last_col = file_names_cols.last
     last_col << '' until last_col.size == displayed_rows_count
 
-    files_cols.transpose.map { |files_row| files_row.join(' ') }
+    file_names_cols.transpose.map { |files_row| files_row.join(' ') }
   end
 
   private
@@ -30,7 +29,7 @@ class ShortFormatter
   end
 
   def count_displayed_rows
-    files_count = @files.size
+    files_count = @file_names.size
     files_count.ceildiv(DISPLAYED_COLUMNS_COUNT)
   end
 end

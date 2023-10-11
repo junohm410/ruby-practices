@@ -33,8 +33,8 @@ class LongFormatter
     '7' => 'rwx'
   }.freeze
 
-  def initialize(files)
-    @files = files
+  def initialize(file_names)
+    @files = file_names.map { |file_name| ObtainedFile.new(file_name) }
   end
 
   def format_files
