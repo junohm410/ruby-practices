@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'formatter'
-
-class LongFormatter < Formatter
+class LongFormatter
   SUID = '4'
   SGID = '2'
   STICKY_BIT = '1'
@@ -35,11 +33,15 @@ class LongFormatter < Formatter
     '7' => 'rwx'
   }.freeze
 
+  def initialize(files)
+    @files = files
+  end
+
   def format_files
-    longest_hard_links_string_length = Formatter.find_longest_string_length(organize_all_hard_links_counts)
-    longest_owner_string_length = Formatter.find_longest_string_length(organize_all_owners)
-    longest_group_string_length = Formatter.find_longest_string_length(organize_all_groups)
-    longest_file_size_string_length = Formatter.find_longest_string_length(organize_all_file_sizes)
+    longest_hard_links_string_length = find_longest_string_length(organize_all_hard_links_counts)
+    longest_owner_string_length = find_longest_string_length(organize_all_owners)
+    longest_group_string_length = find_longest_string_length(organize_all_groups)
+    longest_file_size_string_length = find_longest_string_length(organize_all_file_sizes)
     formatted_files =
       @files.map do |file|
         formatted_file_mode = format_file_mode(file.file_mode)
@@ -56,6 +58,10 @@ class LongFormatter < Formatter
   end
 
   private
+
+  def find_longest_string_length(file_prop_strings)
+    file_prop_strings.map(&:size).max
+  end
 
   def organize_all_hard_links_counts
     @files.map { |file| file.hard_links_count.to_s }

@@ -1,13 +1,15 @@
 # frozen_string_literal: true
 
-require_relative 'formatter'
-
-class ShortFormatter < Formatter
+class ShortFormatter
   DISPLAYED_COLUMNS_COUNT = 3
+
+  def initialize(files)
+    @files = files
+  end
 
   def format_files
     file_names = @files.map(&:name)
-    longest_file_name_string_length = Formatter.find_longest_string_length(file_names)
+    longest_file_name_string_length = find_longest_string_length(file_names)
     displayed_rows_count = count_displayed_rows
 
     files_cols =
@@ -22,6 +24,10 @@ class ShortFormatter < Formatter
   end
 
   private
+
+  def find_longest_string_length(file_prop_strings)
+    file_prop_strings.map(&:size).max
+  end
 
   def count_displayed_rows
     files_count = @files.size
