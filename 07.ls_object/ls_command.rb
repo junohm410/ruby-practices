@@ -6,9 +6,10 @@ require_relative 'short_formatter'
 require_relative 'long_formatter'
 
 class LsCommand
-  def initialize(file_names, is_l_option_valid)
-    @file_names = file_names
+  def initialize(file_names, is_r_option_valid, is_l_option_valid)
+    @is_r_option_valid = is_r_option_valid
     @is_l_option_valid = is_l_option_valid
+    @file_names = @is_r_option_valid ? file_names.reverse : file_names
     formatter = @is_l_option_valid ? LongFormatter.new(@file_names) : ShortFormatter.new(@file_names)
     @formatted_files = formatter.format_files
   end
