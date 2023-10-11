@@ -7,7 +7,7 @@ class ObtainedFile
 
   def initialize(file_name)
     @name = file_name
-    @file_stat = File.symlink?(file_name) ? File.lstat(file_name) : File.stat(file_name)
+    @file_stat = File.symlink?(@name) ? File.lstat(@name) : File.stat(@name)
   end
 
   def block_size = @file_stat.blocks
@@ -19,11 +19,11 @@ class ObtainedFile
   def updated_at = @file_stat.mtime
 
   def read_link
-    File.readlink(name)
+    File.readlink(@name)
   end
 
   def symbolic_link?
-    File.symlink?(name)
+    File.symlink?(@name)
   end
 
   private

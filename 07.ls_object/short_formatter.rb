@@ -8,7 +8,6 @@ class ShortFormatter
   end
 
   def format_files
-    longest_file_name_string_length = find_longest_string_length(@file_names)
     displayed_rows_count = count_displayed_rows
 
     file_names_cols =
@@ -19,13 +18,13 @@ class ShortFormatter
     last_col = file_names_cols.last
     last_col << '' until last_col.size == displayed_rows_count
 
-    file_names_cols.transpose.map { |files_row| files_row.join(' ') }
+    file_names_cols.transpose.map { |file_names_row| file_names_row.join(' ') }
   end
 
   private
 
-  def find_longest_string_length(file_prop_strings)
-    file_prop_strings.map(&:size).max
+  def longest_file_name_string_length
+    @file_names.map(&:size).max
   end
 
   def count_displayed_rows
