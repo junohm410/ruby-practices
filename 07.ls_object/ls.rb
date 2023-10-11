@@ -3,8 +3,12 @@
 require_relative 'ls_command'
 
 def main
-  ls = LsCommand.new
-  ls.display_files
+  options = ARGV.getopts('arl')
+  flag = options['a'] ? File::FNM_DOTMATCH : 0
+  file_names = options['r'] ? Dir.glob('*', flag).reverse : Dir.glob('*', flag)
+  is_l_option_valid = options['l']
+  ls_command = LsCommand.new(file_names, is_l_option_valid)
+  ls_command.display_files
 end
 
 main

@@ -6,15 +6,14 @@ require_relative 'short_formatter'
 require_relative 'long_formatter'
 
 class LsCommand
-  def initialize
-    options = ARGV.getopts('arl')
-    flag = options['a'] ? File::FNM_DOTMATCH : 0
-    file_names = options['r'] ? Dir.glob('*', flag).reverse : Dir.glob('*', flag)
-    @formatter = options['l'] ? LongFormatter.new(file_names) : ShortFormatter.new(file_names)
+  def initialize(file_names, is_l_option_valid)
+    @file_names = file_names
+    @is_l_option_valid = is_l_option_valid
+    formatter = @is_l_option_valid ? LongFormatter.new(@file_names) : ShortFormatter.new(@file_names)
+    @formatted_files = formatter.format_files
   end
 
   def display_files
-    formatted_files = @formatter.format_files
-    formatted_files.each { |files| puts files }
+    @formatted_files.each { |files| puts files }
   end
 end
